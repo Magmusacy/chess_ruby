@@ -1,0 +1,80 @@
+Create the chessboard in 8x8 grid
+(columns:a b c d e f g h, rows:1 2 3 4 5 6 7 8)
+create 16 pieces for each player the game (black and white):
+- 1 king
+- 1 queen
+- 2 rooks
+- 2 knights
+- 2 bishops
+- 8 pawns
+game starts as follows:
+
+  [rook knight bishop queen king bishop knight rook]
+  [pawn pawn pawn pawn pawn pawn pawn pawn]
+  [                                       ]
+  [                                       ]
+  [                                       ]
+  [                                       ]
+  [pawn pawn pawn pawn pawn pawn pawn pawn]
+  [rook knight bishop queen king bishop knight rook]
+
+-- rook movement
+The rook can only move vertically or horizontally. He can't jump over other pieces in his path. If the square on the end of his move contains opponent's 
+piece then this piece is taken. NOTE that the square where rook ends his move may not contain a piece of the same player
+
+-- bishop movement
+The bishop moves only in straight diagonal line and may also not jump over opponent's pieces
+
+-- queen movement
+The quene has combined movement of rook and bishop it means that she can only move in straight diagonal lines as well as horizontal and vertical lines
+
+-- knight movement
+The knight moves 2 steps in vertical or horizontal direction and 1 step in vertical direction if his first 2 steps were horizontal or 1 step horizontal 
+
+-- pawn movement
+The pawn moves 1 square straight forward, if it didn't move at all pawn can move 2 squares forward. When taking other piece pawn can move 1 upward square diagonally 
+
+-- king movement
+The king moves 1 square vertically, horizontally and diagonally though there's a special type of move called castling made by king and rook 
+
+:SPECIAL RULES:
+
+-- en-passant
+when a pawn makes a double step from the second row to the fourth row, and there is an enemy pawn on an adjacent square on the fourth row,
+then this enemy pawn in the next move may move diagonally
+to the square that was passed over by the double-stepping pawn, which is on the third row. 
+In this same move, the double-stepping pawn is taken. This taking en-passant must be done directly:
+if the player who could take en-passant does not do this in the first move after the double step, this pawn cannot be taken anymore by an en-passant move.
+
+-- pawns that reach last row
+If pawn reaches the last row player can promote it to queen, rook, knight, or bishop (of the same color). 
+
+-- castling
+Under special conditions king and rook can move simultaneously:
+* The king that makes the castling move has not yet moved in the game.
+* The rook that makes the castling move has not yet moved in the game.
+* The king is not in check.
+* The king does not move over a square that is attacked by an enemy piece during the castling move, i.e., when castling, there may not be an enemy piece that can move (in case of pawns: by diagonal movement) to a square that is moved over by the king.
+* The king does not move to a square that is attacked by an enemy piece during the castling move, i.e., you may not castle and end the move with the king in check.
+* All squares between the rook and king before the castling move are empty.
+* The King and rook must occupy the same rank (or row).
+
+-- check
+When the king of a player can be taken by a piece of the opponent, one says that the king is in check. 
+For instance, the white player moves his rook to a position such that it attacks the black king, i.e., 
+if black doesn't do anything about it, the rook could take the black king in the next move: 
+we say that the white rook gives check. It is considered good manners to say check when one checks ones opponent.
+
+-- mate
+When a player is in check, and he cannot make a move such that after the move, the king is not in check, then he is mated. 
+The player that is mated lost the game, and the player that mated him won the game.
+
+Note that there are three different possible ways to remove a check:
+
+*Move the king away to a square where he is not in check.
+*Take the piece that gives the check.
+*(In case of a check, given by a rook, bishop or queen: ) move a piece between the checking piece and the king.
+
+-- stalemate
+When a player cannot make any legal move, but he is not in check, then the player is said to be stalemated. In a case of a stalemate, the game is a draw.
+
