@@ -22,6 +22,24 @@ class Pawn
     end
   end
 
+  def is_legal?(board, finish)
+    legal = legal_moves(board)[:moves].map do |move|
+      if move.is_a? Array
+        move
+      else
+        move = move.first[0]
+      end
+    end
+    if legal.include?(finish)
+      p legal
+      true
+    else
+      p legal
+      puts "This move is illegal, try something different"
+      false
+    end
+  end
+
   private
   
   def legal_moves(board)
@@ -48,13 +66,17 @@ class Pawn
     end
 
     board.each do |square|
-      if !square.is_a?(Array) && square.icon != self.icon && square.position[0] == position[0] - row && (square.position[1] == columns[letter_index - 1] || square.position[1] == columns[letter_index + 1])
-        return_hash[:moves] << {square.position => square}
+      if !square.is_a?(Array) && square.icon != self.icon && square.position[0] == position[0] - row && 
+        (square.position[1] == columns[letter_index - 1] || square.position[1] == columns[letter_index + 1])
+          return_hash[:moves] << {square.position => square}
       end
 
-      #if square.is_a?(Pawn) && square.position[0] == position[0] && square.icon != self.icon && (square.position[1] == columns[letter_index - 1] || square.position[1] == columns[letter_index + 1]) && (square.last_move.first[0] - square.last_move.first[1] == 2) # en passant
-      #  return_hash[:moves] << {square.position => square}
-      #end
+      if square.is_a?(Pawn) && square.position[0] == position[0] && square.icon != self.icon && # en passant
+        (square.position[1] == columns[letter_index - 1] || square.position[1] == columns[letter_index + 1]) && 
+        ((square.last_move.first[0][0] - square.last_move.first[1][0]).abs == 2) &&
+        board[board.index(square) - (row * 8)].is_a?(Array)
+          return_hash[:moves] << {board[board.index(square) - (row * 8)] => square}
+      end
 
     end
 
@@ -62,9 +84,11 @@ class Pawn
   end
 
   def take_enemy_piece(hash, finish, board)
-    if hash[0] == finish
-      @last_move[position] = finish
-      self.position = finish if hash[0] == finish
+    if hash[0] == finish && hash[1].position != finish # en passant special rule
+      en_passant(hash, finish, board)
+    elsif hash[0] == finish
+      @last_move = {position => finish}
+      self.position = finish 
       board.map { |square| square == hash[1] ? square = self : square } 
     else
       board
@@ -73,11 +97,25 @@ class Pawn
 
   def move_to_array(array, finish, board)
     if array == finish
-      @last_move[position] = finish
+      @last_move = {position => finish}
       self.position = finish
       board.map { |square| square == array ? square = self : square }
     else
       board
+    end
+  end
+
+  def en_passant(hash, finish, board)
+    @last_move = {position => finish}
+    self.position = finish 
+    board.map do |square|
+      if square == hash[1]
+        square = hash[1].position
+      elsif square == finish
+        square = self
+      else
+        square
+      end
     end
   end
 
