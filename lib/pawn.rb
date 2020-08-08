@@ -1,15 +1,16 @@
 class Pawn
-  attr_accessor :position, :icon, :last_move
-  def initialize(icon, position)
+  attr_accessor :position, :icon, :color,:last_move
+  def initialize(icon, position, color)
     @icon = icon
     @position = position
+    @color = color
     @last_move = {}
   end
 
   def move(board, finish)
     available_moves = legal_moves(board) 
-    available_moves[:moves].each do |move|
-      board.map! { |square| square == self ? square = self.position : square }
+    board.map! { |square| square == self ? square = self.position : square }
+    available_moves[:moves].each do |move| 
       if move.is_a?(Hash)
         old_board = board
         new_board = take_enemy_piece(move.first, finish, board)
@@ -23,18 +24,10 @@ class Pawn
   end
 
   def is_legal?(board, finish)
-    legal = legal_moves(board)[:moves].map do |move|
-      if move.is_a? Array
-        move
-      else
-        move = move.first[0]
-      end
-    end
+    legal = legal_moves(board)[:moves].map { |move| move.is_a?(Array) ? move : move.first[0] } 
     if legal.include?(finish)
-      p legal
       true
     else
-      p legal
       puts "This move is illegal, try something different"
       false
     end
@@ -43,10 +36,10 @@ class Pawn
   private
   
   def legal_moves(board)
-    case icon
-    when "♟︎"
+    case color
+    when "black"
       search_moves(board, -1)
-    when "♙"
+    when "white"
       search_moves(board, 1)
     end 
   end
@@ -66,12 +59,12 @@ class Pawn
     end
 
     board.each do |square|
-      if !square.is_a?(Array) && square.icon != self.icon && square.position[0] == position[0] - row && 
+      if !square.is_a?(Array) && square.color != self.color && square.position[0] == position[0] - row && 
         (square.position[1] == columns[letter_index - 1] || square.position[1] == columns[letter_index + 1])
           return_hash[:moves] << {square.position => square}
       end
 
-      if square.is_a?(Pawn) && square.position[0] == position[0] && square.icon != self.icon && # en passant
+      if square.is_a?(Pawn) && square.position[0] == position[0] && square.color != self.color && # en passant
         (square.position[1] == columns[letter_index - 1] || square.position[1] == columns[letter_index + 1]) && 
         ((square.last_move.first[0][0] - square.last_move.first[1][0]).abs == 2) &&
         board[board.index(square) - (row * 8)].is_a?(Array)
