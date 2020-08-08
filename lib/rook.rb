@@ -1,29 +1,11 @@
 require './lib/pawn.rb'
 class Rook < Pawn
-  def move(board, finish)
-    available_moves = legal_moves(board, finish) 
-    board.map! { |square| square == self ? square = self.position : square }
-    available_moves[:moves].each do |move|
-      if move.is_a?(Hash)
-        old_board = board
-        new_board = take_enemy_piece(move.first, finish, board)
-        return new_board if old_board != new_board
-      else
-        old_board = board
-        new_board = move_to_array(move, finish, board)
-        return new_board if old_board != new_board
-      end
-    end
+  def move(board, finish, available_moves = legal_moves(board, finish))
+    super
   end
 
-  def is_legal?(board, finish)
-    legal = legal_moves(board, finish)[:moves].map { |move| move.is_a?(Array) ? move : move.first[0] } 
-    if legal.include?(finish)
-      true
-    else
-      puts "This move is illegal, try something different"
-      false
-    end
+  def is_legal?(board, finish, legal = legal_moves(board, finish))
+    super
   end
 
   private

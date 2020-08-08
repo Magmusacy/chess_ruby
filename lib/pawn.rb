@@ -7,8 +7,7 @@ class Pawn
     @last_move = {}
   end
 
-  def move(board, finish)
-    available_moves = legal_moves(board) 
+  def move(board, finish, available_moves = legal_moves(board))
     board.map! { |square| square == self ? square = self.position : square }
     available_moves[:moves].each do |move| 
       if move.is_a?(Hash)
@@ -23,8 +22,8 @@ class Pawn
     end
   end
 
-  def is_legal?(board, finish)
-    legal = legal_moves(board)[:moves].map { |move| move.is_a?(Array) ? move : move.first[0] } 
+  def is_legal?(board, finish, legal = legal_moves(board))
+    legal = legal[:moves].map! { |move| move.is_a?(Array) ? move : move.first[0] } 
     if legal.include?(finish)
       true
     else
