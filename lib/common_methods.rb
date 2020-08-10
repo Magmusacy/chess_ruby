@@ -1,13 +1,13 @@
 module CommonMethods
 
   def check_diagonal(board, character, number, curr_pos, moves = [])
-    return moves if moves.any? { |el| el.is_a?(Hash) }
     next_pos = [curr_pos[0] + number, (curr_pos[1].ord + character).chr]
+    return moves if moves.any? { |el| el.is_a?(Hash) } || !Array(1..8).product(Array('a'..'h')).include?(next_pos)
     board.each do |square|
       if square.is_a?(Array) && square == next_pos
         moves << square
-      elsif !square.is_a?(Array) && square.position == next_pos
-        moves << {square.position => square}
+      elsif !square.is_a?(Array) && square.position == next_pos && square.color != self.color
+        moves << {square.position => square} 
       end
     end
     check_diagonal(board, character, number, next_pos, moves)
@@ -34,5 +34,5 @@ module CommonMethods
     end
     return_hash
   end
-  
+
 end
