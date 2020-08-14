@@ -1,14 +1,5 @@
 require './lib/pawn.rb'
 class Knight < Pawn
-  def move(board, finish, available_moves = legal_moves(board))
-    super
-  end
-
-  def is_legal?(board, finish, legal = legal_moves(board))
-    super
-  end
-
-  private
 
   def legal_moves(board, return_hash = {moves: []})
     possible_moves = [

@@ -1,14 +1,5 @@
 require './lib/pawn.rb'
 class King < Pawn
-  def move(board, finish, available_moves = legal_moves(board))
-    super
-  end
-
-  def is_legal?(board, finish, legal = legal_moves(board))
-    super
-  end
-
-  private
 
   def legal_moves(board) 
     return_hash = {moves: []}
@@ -16,11 +7,13 @@ class King < Pawn
       if square.is_a?(Array)
         return_hash[:moves] << square if find_move_row(square)
       elsif !square.is_a?(Array)
-        return_hash[:moves] << {square => square.position} if find_move_row(square.position) && square.color != color
+        return_hash[:moves] << {square.position => square} if find_move_row(square.position) && square.color != color
       end
     end
     return_hash
   end
+
+  private
 
   def find_move_row(square) 
     case square[0] - position[0]
