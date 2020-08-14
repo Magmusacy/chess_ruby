@@ -1,8 +1,8 @@
 require './lib/player'
 class ChessBoard
 attr_accessor :board
-  def initialize
-    @board = (Array(1..8)).product Array("a".."h")
+  def initialize 
+    @board = ((Array(1..8)).product Array("a".."h")).sort_by { |x,y| -x }
   end
 
   def assign_board_squares(player)
@@ -11,11 +11,11 @@ attr_accessor :board
     end
   end
 
-  def to_s(array=@board, i=1)
-    return puts "    ⬆   ⬆   ⬆   ⬆   ⬆   ⬆   ⬆   ⬆" if i == 9
+  def to_s(array=@board, i=8)
+    return puts "    ⬆   ⬆   ⬆   ⬆   ⬆   ⬆   ⬆   ⬆" if i == 0
     puts "#{i} ➡ #{square_to_icon(array[0..7])}"
-    puts "    ━━┼━━━┼━━━┼━━━┼━━━┼━━━┼━━━┼━━━" unless i == 8
-    to_s(array[8..-1], i+1)
+    puts "    ━━┼━━━┼━━━┼━━━┼━━━┼━━━┼━━━┼━━━" unless i == 1
+    to_s(array[8..-1], i-1)
          "    a   b   c   d   e   f   g   h"
   end
 
@@ -30,7 +30,7 @@ attr_accessor :board
 
   def square_to_icon(array)
     converted = array.map do |element|
-      element.class == Array ? element = " " : element = element.icon
+      element.is_a?(Array) ? element = " " : element = element.icon
     end
     converted_string = ""
     8.times { |x| converted_string << "#{converted[x]} ┃ " }
@@ -38,10 +38,3 @@ attr_accessor :board
   end
 end
 
-
-plr1 = Player.new("wał", "black")
-chess = ChessBoard.new
-plr2 = Player.new("Taco hemingway", "white")
-chess.assign_board_squares(plr1)
-chess.assign_board_squares(plr2)
-puts chess
