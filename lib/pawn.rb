@@ -1,9 +1,10 @@
 class Pawn
-  attr_accessor :position, :icon, :color,:last_move
-  def initialize(icon, position, color)
+  attr_accessor :position, :icon, :color,:last_move, :parent
+  def initialize(icon, position, color, parent)
     @icon = icon
     @position = position
     @color = color
+    @parent = parent
     @last_move = {}
   end
 
@@ -31,17 +32,17 @@ class Pawn
       false
     end
   end
-
-  private
   
   def legal_moves(board)
     case color
     when "black"
-      search_moves(board, -1)
-    when "white"
       search_moves(board, 1)
+    when "white"
+      search_moves(board, -1)
     end 
   end
+
+  private
 
   def search_moves(board, row, return_hash = {moves: []})
     columns = Array("a".."h")
@@ -52,7 +53,7 @@ class Pawn
       moves.each { |move| return_hash[:moves] << move}
     end
     
-    if !@last_move.empty? && position[0] != 1 # later on i have to add here transition from pawn to queen... etc
+    if !@last_move.empty? 
       moves = board.select { |move| move.is_a?(Array) && move[1] == position[1] && position[0] - row == move[0] }
       moves.each { |move| return_hash[:moves] << move}
     end
@@ -63,7 +64,7 @@ class Pawn
           return_hash[:moves] << {square.position => square}
       end
 
-      if square.is_a?(Pawn) && square.position[0] == position[0] && square.color != self.color && # en passant
+      if square.instance_of?(Pawn) && square.position[0] == position[0] && square.color != self.color && # en passant 
         (square.position[1] == columns[letter_index - 1] || square.position[1] == columns[letter_index + 1]) && 
         ((square.last_move.first[0][0] - square.last_move.first[1][0]).abs == 2) &&
         board[board.index(square) - (row * 8)].is_a?(Array)
@@ -76,19 +77,25 @@ class Pawn
   end
 
   def take_enemy_piece(hash, finish, board)
-    if hash[0] == finish && hash[1].position != finish # en passant special rule
+    if hash[0] == finish && hash[1].position != finish # en passant special rule shjou.d check if it works with any other piece just to be sure
       en_passant(hash, finish, board)
     elsif hash[0] == finish
       @last_move = {position => finish}
+      hash[1].parent.pieces.delete(hash[1]) # deletes the piece from opponent's pieces array
       self.position = finish 
-      board.map { |square| square == hash[1] ? square = self : square } 
+      board.map { |square| square == hash[1] ? square = self : square } y
     else
       board
     end
   end
 
   def move_to_array(array, finish, board)
-    if array == finish
+    if array == finish && self.instance_of?(Pawn) && (finish[0] == 8 || finish[0] == 1)
+      new_piece = promotion(finish, board)
+      self.parent.pieces << new_piece
+      self.parent.pieces.delete(self) 
+      board.map { |square| square == array ? square = new_piece : square }
+    elsif array == finish
       @last_move = {position => finish}
       self.position = finish
       board.map { |square| square == array ? square = self : square }
@@ -99,6 +106,7 @@ class Pawn
 
   def en_passant(hash, finish, board)
     @last_move = {position => finish}
+    hash[1].parent.pieces.delete(hash[1]) # deletes the piece from opponent's pieces array
     self.position = finish 
     board.map do |square|
       if square == hash[1]
@@ -109,6 +117,20 @@ class Pawn
         square
       end
     end
+  end
+
+  def promotion(finish, board)
+    icons = finish[0] == 8 ? ["♜", "♞","♝","♛"] : ["♖","♘","♗","♕"]
+    options = {
+      queen: Queen.new(icons[3], finish, self.color, self.parent),
+      rook: Rook.new(icons[0], finish, self.color, self.parent),
+      knight: Knight.new(icons[1], finish, self.color, self.parent),
+      bishop: Bishop.new(icons[2], finish, self.color, self.parent)
+    }
+    puts "Choose between Rook, Knight, Bishop and Queen\nJust type one of these in terminal"
+    choice = options[gets.chomp.intern]
+    choice = promotion(finish, board) if choice.nil?;
+    choice
   end
 
 end
