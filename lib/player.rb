@@ -23,10 +23,10 @@ include CommonMethods
     end
   end
 
-  def is_checked?(other_player, board)
+  def is_checked?(other_player, board, msg=true)
     other_player.pieces.each do |piece|
       if beats_king?(piece.legal_moves(board)[:moves]) != false
-        puts "#{self.name} is CHECKED by #{other_player.name}"
+        puts "#{self.name} is CHECKED by #{other_player.name}" if msg
         return true 
       end
     end
@@ -34,10 +34,10 @@ include CommonMethods
   end
 
   def is_mated?(other_player, board, ary = []) 
-    return false if is_checked?(other_player, board) == false
+    return false if is_checked?(other_player, board, false) == false
     king = pieces.find{ |piece| piece.is_a? King }
     if king.legal_moves(board)[:moves].empty?
-      puts "#{self.name} is MATED by #{other_player.name}"
+      puts "#{self.name} is MATED by #{other_player.name}, #{other_player.name} WINS!"
       return true
     else
       false
@@ -46,13 +46,13 @@ include CommonMethods
 
   def stalemate?(other_player, board)
     return false if is_checked?(other_player, board) == true
-    king = pieces.find{ |piece| piece.is_a? King }
-    if king.legal_moves(board)[:moves].empty?
-      puts "STALEMATE the game is a draw"
-      return true
-    else
-      false
+    pieces.each do |piece|
+      unless piece.legal_moves(board)[:moves].empty?
+        return false
+      end
     end
+    puts "STALEMATE the game is a draw"
+    return true
   end 
 
   private
