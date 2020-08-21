@@ -41,32 +41,23 @@ class King < Pawn
       king_moves.count.times do |move|
         king_moves[move].is_a?(Array) ? (new_move = king_moves[move]) : (new_move = king_moves[move].first[0]) 
         new_king = Marshal.dump(self)
-        new_board = Marshal.dump(board)
         player = Marshal.dump(self.parent)
         opponent_player = Marshal.dump(opponent)
-        ary << check_following_moves(Marshal.load(new_king), Marshal.load(new_board), Marshal.load(player), Marshal.load(opponent_player), new_move)
+        ary << check_following_moves(Marshal.load(new_king), ChessBoard.new, Marshal.load(player), Marshal.load(opponent_player), new_move)
       end
       ary.each { |el| el.is_a?(Hash) ? return_hash[:moves].reject!{ |move| move.is_a?(Array) && move == el.first[1] || !move.is_a?(Array) && move.first[0] == el.first[1]} : next }
       return_hash
   end
 
-  def check_following_moves(king, board, player, opponent, new_move)
-    board.map!{ |square| (square.is_a?(King) && square.color == player.color) ? square.position : square} # remove the initial opponent's king
-    player.pieces, opponent.pieces = [], [] # new players and opponent objects are linked with piece objects prior to deep clone so i had to clean their pieces array and fill them with new deep cloned instances of pieces
-    board.each do |piece|
-      if !piece.is_a?(Array) && piece.color == player.color
-        piece.parent = player
-        player.pieces << piece
-      elsif !piece.is_a?(Array) && piece.color == opponent.color
-        piece.parent = opponent
-        opponent.pieces << piece
-      end
-    end
-
-    board = king.move(board, new_move, legal_moves(board, true))
+  def check_following_moves(king, chess, player, opponent, new_move)
+    player.pieces.reject!{ |piece| piece.is_a?(King) } # remove player's initial king
+    
+    chess.assign_board_squares(player)
+    chess.assign_board_squares(opponent)
+    chess.board = king.move(chess.board, new_move, legal_moves(chess.board, true))
 
     opponent.pieces.each do |piece|
-      legal = piece.is_a?(King) ? beats_king?(piece.legal_moves(board, true)[:moves]) : beats_king?(piece.legal_moves(board)[:moves])
+      legal = piece.is_a?(King) ? beats_king?(piece.legal_moves(chess.board, true)[:moves]) : beats_king?(piece.legal_moves(chess.board)[:moves])
       return legal unless legal == false # return true next move is checked
     end
     return false # return false  next move isn't checked
