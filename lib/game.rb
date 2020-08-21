@@ -1,5 +1,5 @@
 require './lib/chess_board'
-
+require 'yaml'
 def legal_position(move, legal_moves=Array(1..8).product(Array("a".."h"))) # checks if specified move is even on the board
   move = move.split(":")
   move.map! { |move| move.split("-"); [move[0].to_i, move[2]] }
@@ -41,7 +41,6 @@ def king_check_move(player, board)
 end
 
 def play(moving_player, opponent, chess)
-  puts chess
   if moving_player.is_mated?(opponent, chess.board)
     return false
   elsif moving_player.is_checked?(opponent, chess.board) 
@@ -53,22 +52,62 @@ def play(moving_player, opponent, chess)
   end
 end
 
+def save_game(player1, player2, turn)
+  player1 = YAML.dump(player1)
+  player2 = YAML.dump(player2) 
+  turn = YAML.dump(turn)
+  puts "Choose a name for your save, remember that using a name that is already in use will cause permament override of previous save"
+  save_name = gets.chomp
+  file = File.open("./saves/#{save_name}.yaml", "w") do |line| 
+    line.puts player1
+    line.puts player2
+    line.puts turn
+  end
+end
+
+def load_game
+  saves = Dir.glob("saves/*")
+  saves.each_with_index { |save, idx| puts "#{save.gsub("saves/", "")} - #{idx}" }
+  puts "Above are your current saves with indexes, type index of a save that you want to load (NOTE: if you type wrong index/string you'll load default save which is at index 0)"
+  index = gets.to_i
+  objects = YAML.load_stream(File.read(saves[index])) # load_stream is a method to load multiple objects from one YAML file
+end
+
 def game
   puts "Welcome to chess created by Magmusacy"
-  print "Input player 1 name (black): "; player1 = Player.new(gets.chomp, "black")
-  print "Input player 2 name (white): "; player2 = Player.new(gets.chomp, "white")
+
+  if !Dir.glob("saves/*").empty?
+    puts "Type (L) to load a save, (ANY KEY) to skip" 
+    answer = gets.chomp
+  else
+    answer = ""
+  end
+
+  if answer.upcase == "L"
+    chosen_save = load_game
+    player1 = chosen_save[0]
+    player2 = chosen_save[1]
+    turn = chosen_save[2]
+  else
+    print "Input player 1 name (black): "; player1 = Player.new(gets.chomp, "black")
+    print "Input player 2 name (white): "; player2 = Player.new(gets.chomp, "white")
+    turn = 0
+  end
+
   chess = ChessBoard.new
-  default_board = chess.board
   chess.assign_board_squares(player1)
   chess.assign_board_squares(player2)
-  i = 0
+
   game_status = true
   until game_status == false
-    move = play(player1, player2, chess) if i.even?
-    move = play(player2, player1, chess) if i.odd?
+    puts chess
+    puts "Do you wish to save your progress? (Y), (ANY KEY) to skip"; answer = gets.chomp
+    save_game(player1, player2, turn) if answer.upcase == "Y"
+    move = play(player1, player2, chess) if turn.even?
+    move = play(player2, player1, chess) if turn.odd?
     chess.board = move == false ? chess.board : move[0].move(chess.board, move[1])
     game_status = move
-    i += 1
+    turn += 1
   end
 end
 

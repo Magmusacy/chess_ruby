@@ -1,0 +1,277 @@
+--- &1 !ruby/object:Player
+name: Taco
+color: black
+pieces:
+- !ruby/object:Rook
+  icon: "♜"
+  position:
+  - 8
+  - a
+  color: black
+  parent: *1
+  last_move: {}
+- !ruby/object:Knight
+  icon: "♞"
+  position:
+  - 8
+  - b
+  color: black
+  parent: *1
+  last_move: {}
+- !ruby/object:Bishop
+  icon: "♝"
+  position:
+  - 8
+  - c
+  color: black
+  parent: *1
+  last_move: {}
+- !ruby/object:Queen
+  icon: "♛"
+  position: &2
+  - 6
+  - e
+  color: black
+  parent: *1
+  last_move:
+    ? - 6
+      - d
+    : *2
+- !ruby/object:King
+  icon: "♚"
+  position:
+  - 8
+  - e
+  color: black
+  parent: *1
+  last_move: {}
+- !ruby/object:Bishop
+  icon: "♝"
+  position:
+  - 8
+  - f
+  color: black
+  parent: *1
+  last_move: {}
+- !ruby/object:Knight
+  icon: "♞"
+  position:
+  - 8
+  - g
+  color: black
+  parent: *1
+  last_move: {}
+- !ruby/object:Rook
+  icon: "♜"
+  position:
+  - 8
+  - h
+  color: black
+  parent: *1
+  last_move: {}
+- !ruby/object:Pawn
+  icon: "♟︎"
+  position:
+  - 7
+  - a
+  color: black
+  parent: *1
+  last_move: {}
+- !ruby/object:Pawn
+  icon: "♟︎"
+  position:
+  - 7
+  - b
+  color: black
+  parent: *1
+  last_move: {}
+- !ruby/object:Pawn
+  icon: "♟︎"
+  position:
+  - 7
+  - c
+  color: black
+  parent: *1
+  last_move: {}
+- !ruby/object:Pawn
+  icon: "♟︎"
+  position: &3
+  - 5
+  - d
+  color: black
+  parent: *1
+  last_move:
+    ? - 7
+      - d
+    : *3
+- !ruby/object:Pawn
+  icon: "♟︎"
+  position:
+  - 7
+  - e
+  color: black
+  parent: *1
+  last_move: {}
+- !ruby/object:Pawn
+  icon: "♟︎"
+  position:
+  - 7
+  - f
+  color: black
+  parent: *1
+  last_move: {}
+- !ruby/object:Pawn
+  icon: "♟︎"
+  position:
+  - 7
+  - g
+  color: black
+  parent: *1
+  last_move: {}
+- !ruby/object:Pawn
+  icon: "♟︎"
+  position:
+  - 7
+  - h
+  color: black
+  parent: *1
+  last_move: {}
+--- &1 !ruby/object:Player
+name: Hemingway
+color: white
+pieces:
+- !ruby/object:Rook
+  icon: "♖"
+  position:
+  - 1
+  - a
+  color: white
+  parent: *1
+  last_move: {}
+- !ruby/object:Knight
+  icon: "♘"
+  position:
+  - 1
+  - b
+  color: white
+  parent: *1
+  last_move: {}
+- !ruby/object:Bishop
+  icon: "♗"
+  position:
+  - 1
+  - c
+  color: white
+  parent: *1
+  last_move: {}
+- !ruby/object:Queen
+  icon: "♕"
+  position:
+  - 1
+  - d
+  color: white
+  parent: *1
+  last_move: {}
+- !ruby/object:King
+  icon: "♔"
+  position: &2
+  - 3
+  - e
+  color: white
+  parent: *1
+  last_move:
+    ? - 2
+      - e
+    : *2
+- !ruby/object:Bishop
+  icon: "♗"
+  position:
+  - 1
+  - f
+  color: white
+  parent: *1
+  last_move: {}
+- !ruby/object:Knight
+  icon: "♘"
+  position:
+  - 1
+  - g
+  color: white
+  parent: *1
+  last_move: {}
+- !ruby/object:Rook
+  icon: "♖"
+  position:
+  - 1
+  - h
+  color: white
+  parent: *1
+  last_move: {}
+- !ruby/object:Pawn
+  icon: "♙"
+  position:
+  - 2
+  - a
+  color: white
+  parent: *1
+  last_move: {}
+- !ruby/object:Pawn
+  icon: "♙"
+  position:
+  - 2
+  - b
+  color: white
+  parent: *1
+  last_move: {}
+- !ruby/object:Pawn
+  icon: "♙"
+  position:
+  - 2
+  - c
+  color: white
+  parent: *1
+  last_move: {}
+- !ruby/object:Pawn
+  icon: "♙"
+  position:
+  - 2
+  - d
+  color: white
+  parent: *1
+  last_move: {}
+- !ruby/object:Pawn
+  icon: "♙"
+  position: &3
+  - 4
+  - e
+  color: white
+  parent: *1
+  last_move:
+    ? - 2
+      - e
+    : *3
+- !ruby/object:Pawn
+  icon: "♙"
+  position:
+  - 2
+  - f
+  color: white
+  parent: *1
+  last_move: {}
+- !ruby/object:Pawn
+  icon: "♙"
+  position:
+  - 2
+  - g
+  color: white
+  parent: *1
+  last_move: {}
+- !ruby/object:Pawn
+  icon: "♙"
+  position:
+  - 2
+  - h
+  color: white
+  parent: *1
+  last_move: {}
+--- 6
