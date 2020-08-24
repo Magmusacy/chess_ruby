@@ -23,12 +23,14 @@ include CommonMethods
     end
   end
 
-  def is_checked?(other_player, board, msg=true)
+  def is_checked?(other_player, board, msg=true, show_piece=false, return_ary=[])
     other_player.pieces.each do |piece|
-      if beats_king?(piece.legal_moves(board)[:moves]) != false
-        puts "#{self.name} is CHECKED by #{other_player.name}" if msg
-        return true 
-      end
+      return_ary.concat beats_king?(piece.legal_moves(board)[:moves], true) if beats_king?(piece.legal_moves(board)[:moves], true).is_a?(Array)
+    end
+    if !return_ary.empty?
+      puts "#{self.name} is CHECKED by #{other_player.name}" if msg
+      return return_ary if show_piece
+      return true
     end
     false
   end
