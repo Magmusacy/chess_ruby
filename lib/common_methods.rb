@@ -35,9 +35,13 @@ module CommonMethods
     return_hash
   end
 
-  def beats_king?(ary)
-    ary.each { |move| return {true => move.first[0]} if move.is_a?(Hash) && move.first[1].is_a?(King) } 
+  def beats_king?(ary, show_ary=false, return_ary=[])
+    ary.each { |move| return_ary << {true => move.first[0]} if move.is_a?(Hash) && move.first[1].is_a?(King) } 
+    if !return_ary.empty?
+      return return_ary if show_ary
+      return return_ary[0]
+    end
     false
   end
-
+  
 end
