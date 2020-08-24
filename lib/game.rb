@@ -27,24 +27,57 @@ def move_piece(player, board)
   end
 end
 
-def king_check_move(player, board)
+def king_check_move(player, board, pieces_attacking)
   king = board.find { |piece| piece.is_a?(King) && piece.parent == player }
-  puts "#{player.name} is in CHECK and the only piece he can move right now is King at [#{king.position[0]}-#{king.position[1]}]"
+  puts "#{player.name} is in CHECK and he must capture opponent's attacking piece"
+  available_moves = []
+  if pieces_attacking == 1
+    available_moves = find_check_movable_pieces(player, board)
+  end
   move = legal_position(gets.chomp)
-  if move[0] != king.position
-    move = king_check_move(player, board)
+  if available_moves.include?(move)
+    [board.find{ |piece| !piece.is_a?(Array) && piece.position == move[0]}, move[1]] 
+  elsif move[0] != king.position
+    move = king_check_move(player, board, pieces_attacking)
   elsif !king.is_legal?(board, move[1])
-    move = king_check_move(player, board)
+    move = king_check_move(player, board, pieces_attacking)
   else
     [king, move[1]]
   end
+end
+
+def find_check_movable_pieces(player, board)
+  opponent = board.find{ |piece| !piece.is_a?(Array) && piece.parent != player }.parent
+  attacking_piece = nil
+  opponent.pieces.each { |piece| piece.legal_moves(board)[:moves].detect{ |el| el.is_a?(Hash) && el.first[1].is_a?(King) }.nil? ? next : attacking_piece = [piece, piece.legal_moves(board)[:moves]] } # find attacking piece
+  movable_pieces = []
+  player.pieces.each do |piece|
+    taken_piece = piece.legal_moves(board)[:moves].select{ |move| move.is_a?(Hash) && move.first[0] == attacking_piece[0].position }
+    movable_pieces << [piece.position, attacking_piece[0].position] unless taken_piece.empty?
+    moves = piece.legal_moves(board)[:moves] & attacking_piece[1] 
+    moves.length.times do |move|
+    movable_pieces << [piece.position, moves[move]] unless move_stops_check?(Marshal.dump(player), Marshal.dump(opponent), piece, moves[move]) 
+    end
+  end
+  movable_pieces
+end
+
+def move_stops_check?(player, opponent, piece, move)
+  player = Marshal.load(player)
+  opponent = Marshal.load(opponent)
+  piece = player.pieces.find{ |element| piece.position == element.position }
+  chess = ChessBoard.new
+  chess.assign_board_squares(player)
+  chess.assign_board_squares(opponent)
+  chess.board = piece.move(chess.board, move)
+  player.is_checked?(opponent, chess.board, false)
 end
 
 def play(moving_player, opponent, chess)
   if moving_player.is_mated?(opponent, chess.board)
     return false
   elsif moving_player.is_checked?(opponent, chess.board) 
-    move = king_check_move(moving_player, chess.board)
+    move = king_check_move(moving_player, chess.board, moving_player.is_checked?(opponent, chess.board, false, true).length)
   elsif moving_player.stalemate?(opponent, chess.board) 
     return false
   else
