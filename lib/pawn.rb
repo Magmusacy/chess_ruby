@@ -1,3 +1,4 @@
+require './lib/common_methods.rb'
 class Pawn
   attr_accessor :position, :icon, :color,:last_move, :parent
   def initialize(icon, position, color, parent)
@@ -11,14 +12,15 @@ class Pawn
   def move(board, finish, available_moves = legal_moves(board))
     board.map! { |square| square == self ? square = self.position : square }
     available_moves[:moves].each do |move| 
-      if move.is_a?(Hash)
-        old_board = board
+      if move.is_a?(Hash) && move.first[1].is_a?(Array)
+        new_board = castling_move(move, finish, board)
+        return new_board if new_board != board
+      elsif move.is_a?(Hash)
         new_board = take_enemy_piece(move.first, finish, board)
-        return new_board if old_board != new_board
+        return new_board if new_board != board
       else
-        old_board = board
         new_board = move_to_array(move, finish, board)
-        return new_board if old_board != new_board
+        return new_board if new_board != board
       end
     end
   end
@@ -29,6 +31,8 @@ class Pawn
       true
     else
       puts "This move is illegal, try something different"
+      puts "Legal moves for this piece are: "
+      legal.each { |move| puts "[#{move[0]}-#{move[1]}]" }
       false
     end
   end
@@ -66,9 +70,10 @@ class Pawn
 
       if square.instance_of?(Pawn) && square.position[0] == position[0] && square.color != self.color && # en passant 
         (square.position[1] == columns[letter_index - 1] || square.position[1] == columns[letter_index + 1]) && 
+        !square.last_move.empty? && 
         ((square.last_move.first[0][0] - square.last_move.first[1][0]).abs == 2) &&
-        board[board.index(square) - (row * 8)].is_a?(Array)
-          return_hash[:moves] << {board[board.index(square) - (row * 8)] => square}
+        board[board.index(square) + (row * 8)].is_a?(Array)
+          return_hash[:moves] << {board[board.index(square) + (row * 8)] => square}
       end
 
     end
@@ -77,13 +82,13 @@ class Pawn
   end
 
   def take_enemy_piece(hash, finish, board)
-    if hash[0] == finish && hash[1].position != finish # en passant special rule shjou.d check if it works with any other piece just to be sure
+    if hash[0] == finish && hash[1].position != finish # en passant special rule 
       en_passant(hash, finish, board)
     elsif hash[0] == finish
       @last_move = {position => finish}
       hash[1].parent.pieces.delete(hash[1]) # deletes the piece from opponent's pieces array
       self.position = finish 
-      board.map { |square| square == hash[1] ? square = self : square } y
+      board.map { |square| square == hash[1] ? square = self : square } 
     else
       board
     end
@@ -120,7 +125,7 @@ class Pawn
   end
 
   def promotion(finish, board)
-    icons = finish[0] == 8 ? ["♜", "♞","♝","♛"] : ["♖","♘","♗","♕"]
+    icons = finish[0] == 1 ? ["♜", "♞","♝","♛"] : ["♖","♘","♗","♕"]
     options = {
       queen: Queen.new(icons[3], finish, self.color, self.parent),
       rook: Rook.new(icons[0], finish, self.color, self.parent),
@@ -129,8 +134,25 @@ class Pawn
     }
     puts "Choose between Rook, Knight, Bishop and Queen\nJust type one of these in terminal"
     choice = options[gets.chomp.intern]
-    choice = promotion(finish, board) if choice.nil?;
+    choice = promotion(finish, board) if choice.nil?
     choice
+  end
+
+  def castling_move(hash, king_move, board)
+    if hash.first[0] == king_move
+      @last_move = {position => king_move}
+      self.position = king_move
+      board.map do |square| 
+        square = self if square == king_move
+        if square == hash.first[1][1]
+          board = hash.first[1][2].move(board, square) 
+          return castling_move(hash, king_move, board)
+        end
+        square
+      end
+    else
+      board
+    end
   end
 
 end
