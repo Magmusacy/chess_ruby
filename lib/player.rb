@@ -6,12 +6,14 @@ require './lib/king.rb'
 require './lib/bishop.rb'
 require './lib/common_methods.rb'
 class Player
-attr_accessor :name, :pieces, :color
+attr_accessor :pieces
+attr_reader :type, :name, :color
 include CommonMethods
-  def initialize(name, color)
+  def initialize(name, color, type="human")
     @name = name
     @color = color 
     @pieces = create_pieces(color)
+    @type = type
   end
 
   def create_pieces(color)
@@ -56,6 +58,15 @@ include CommonMethods
     puts "STALEMATE the game is a draw"
     return true
   end 
+
+  def ai_legal_moves(board)
+    moves_hash = @pieces.reduce({}) do |accumulator, piece|
+      accumulator[piece] = piece.legal_moves(board)[:moves] unless piece.legal_moves(board)[:moves].empty?
+      accumulator
+    end
+    random_piece = moves_hash.keys.sample
+    [random_piece, moves_hash[random_piece].sample]
+  end
 
   private
 
