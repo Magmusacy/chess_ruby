@@ -1,5 +1,4 @@
 require './lib/pawn.rb'
-require './lib/common_methods.rb'
 class Queen < Pawn
   include CommonMethods
 

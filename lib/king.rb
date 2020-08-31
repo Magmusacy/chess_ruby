@@ -57,13 +57,16 @@ class King < Pawn
     chess.assign_board_squares(player)
     chess.assign_board_squares(opponent)
     chess.board = king.move(chess.board, new_move, legal_moves(chess.board, true))
+<<<<<<< HEAD
 
     return king_in_check?(opponent, chess.board) 
   end
+=======
+>>>>>>> 94ed1b3a3dae3d95d6100589aee5cb46ef5b771f
 
   def king_in_check?(opponent, board)
     opponent.pieces.each do |piece|
-      legal = piece.is_a?(King) ? beats_king?(piece.legal_moves(board, true)[:moves]) : beats_king?(piece.legal_moves(board)[:moves])
+      legal = piece.is_a?(King) ? beats_king?(piece.legal_moves(chess.board, true)[:moves]) : beats_king?(piece.legal_moves(chess.board)[:moves])
       return legal unless legal == false # return true next move is checked
     end
     false
