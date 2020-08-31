@@ -12,6 +12,7 @@ def legal_position(move, legal_moves=Array(1..8).product(Array("a".."h"))) # che
 end
 
 def move_piece(player, board)
+  return player.ai_legal_moves(board) if player.type == "AI"
   puts "Specify which piece you want to move #{player.name}, and to what position eg. \n7-g:6-g"
   move = legal_position(gets.chomp)
   moving_piece = board.find do |piece|
@@ -34,7 +35,7 @@ def king_check_move(player, board, pieces_attacking)
   if pieces_attacking == 1
     available_moves = find_check_movable_pieces(player, board)
   end
-  move = legal_position(gets.chomp)
+  move = player.type == "AI" ? move_piece(player, board) : legal_position(gets.chomp)  
   if available_moves.include?(move)
     [board.find{ |piece| !piece.is_a?(Array) && piece.position == move[0]}, move[1]] 
   elsif move[0] != king.position
@@ -116,14 +117,26 @@ def game
     answer = ""
   end
 
+  def choose_opponent(opponent)
+    print "Input player 1 name (white): "; player1 = Player.new(gets.chomp, "white")
+    if opponent.upcase == "AI"
+      print "player 2 (black) is an AI"; player2 = Player.new("AI", "black", "AI")
+    else
+      print "Input player 2 name (black): "; player2 = Player.new(gets.chomp, "black")
+    end
+    puts
+    [player1, player2]
+  end
+
   if answer.upcase == "L"
     chosen_save = load_game
     player1 = chosen_save[0]
     player2 = chosen_save[1]
     turn = chosen_save[2]
   else
-    print "Input player 1 name (black): "; player1 = Player.new(gets.chomp, "black")
-    print "Input player 2 name (white): "; player2 = Player.new(gets.chomp, "white")
+    puts "You can choose to play against artificial inteligence by typing AI, or other human, by typing anything else"
+    players = choose_opponent(gets.chomp)
+    player1, player2 = players[0], players[1]
     turn = 0
   end
 
