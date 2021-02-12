@@ -1,3 +1,4 @@
+require './lib/piece.rb'
 require './lib/pawn.rb'
 require './lib/rook.rb'
 require './lib/knight.rb'
