@@ -107,6 +107,18 @@ def load_game
   objects = YAML.load_stream(File.read(saves[index])) # load_stream is a method to load multiple objects from one YAML file
 end
 
+def choose_opponent(opponent)
+  print "Input player 1 name (white): "; player1 = Player.new(gets.chomp, "white")
+  if opponent.upcase == "AI"
+    print "player 2 (black) is an AI"; player2 = Player.new("AI", "black", "AI")
+  else
+    print "Input player 2 name (black): "; player2 = Player.new(gets.chomp, "black")
+  end
+  puts
+  [player1, player2]
+end
+
+
 def game
   puts "Welcome to chess created by Magmusacy"
 
@@ -115,17 +127,6 @@ def game
     answer = gets.chomp
   else
     answer = ""
-  end
-
-  def choose_opponent(opponent)
-    print "Input player 1 name (white): "; player1 = Player.new(gets.chomp, "white")
-    if opponent.upcase == "AI"
-      print "player 2 (black) is an AI"; player2 = Player.new("AI", "black", "AI")
-    else
-      print "Input player 2 name (black): "; player2 = Player.new(gets.chomp, "black")
-    end
-    puts
-    [player1, player2]
   end
 
   if answer.upcase == "L"
