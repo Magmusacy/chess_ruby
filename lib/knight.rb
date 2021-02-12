@@ -1,5 +1,5 @@
-require './lib/pawn.rb'
-class Knight < Pawn
+require './lib/piece.rb'
+class Knight < Piece
 
   def legal_moves(board, return_hash = {moves: []})
     possible_moves = [

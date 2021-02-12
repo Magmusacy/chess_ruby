@@ -1,6 +1,6 @@
-require './lib/pawn.rb'
+require './lib/piece.rb'
 require './lib/chess_board.rb'
-class King < Pawn
+class King < Piece
   include CommonMethods
   def legal_moves(board, illegal=false, in_check=false) # these are all possible moves 
     return_hash = {moves: []}

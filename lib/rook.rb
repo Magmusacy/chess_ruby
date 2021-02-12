@@ -1,6 +1,6 @@
-require './lib/pawn.rb'
+require './lib/piece.rb'
 require './lib/common_methods.rb'
-class Rook < Pawn
+class Rook < Piece
   include CommonMethods
   
   def legal_moves(board)

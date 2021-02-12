@@ -1,5 +1,5 @@
-require './lib/pawn.rb'
-class Queen < Pawn
+require './lib/piece.rb'
+class Queen < Piece
   include CommonMethods
 
   def legal_moves(board)
